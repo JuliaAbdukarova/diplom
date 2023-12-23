@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata6:/data/db
+    networks:
+      - common_net
+  
+  app:
+    image: app
+    restart: always
+    depends_on:
+      - mongo
+    build:
+      dockerfile: Dockerfile
+      context: ./ 
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/test
+    ports:
+      - "3001:3001"
+      - "3000:3000"   
+    networks:
+      - common_net
+    deploy:
+      replicas: 1 
+    volumes:
+      - .:/src
+volumes:
+  dbdata6:
+
+networks:
+  common_net:
+    name: custom_network
